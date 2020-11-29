@@ -11,7 +11,7 @@ class PercentileSampleWindow
         {
             this->window = window;
             this->percentile = percentile;
-            this->samples_ = new uint64_t[window]; // TODO figure out how to reuse this buffer
+            this->samples_ = new double[window]; // TODO figure out how to reuse this buffer
         }
 
         ~PercentileSampleWindow()
@@ -19,7 +19,7 @@ class PercentileSampleWindow
             delete this->samples_;
         }
 
-        void add(uint64_t rtt, uint32_t inflight)
+        void add(double rtt, uint32_t inflight)
         {
             uint32_t i = i_.fetch_add(1);
             if (i < window)
@@ -35,7 +35,7 @@ class PercentileSampleWindow
         /*
          * Not get is not thread safe - you should exchange reference to sample window first and only then use get()
          */
-        uint64_t get()
+        double get()
         {
             std::sort(samples_, samples_+window);
             auto k = std::clamp((uint32_t)std::ceil(window*percentile), (uint32_t)0, window-1);
@@ -57,5 +57,5 @@ class PercentileSampleWindow
         uint32_t window;
         std::atomic<uint32_t> i_ = 0;
         std::atomic<uint32_t> max_inflight_ = 0;
-        uint64_t* samples_;
+        double* samples_;
 };

@@ -5,7 +5,7 @@
 class Gradient2Calculator
 {
     public:
-        uint32_t calculateLimit(uint32_t shortRtt, double longRtt, uint32_t limit, uint32_t inflight)
+        uint32_t calculateLimit(double shortRtt, double longRtt, uint32_t limit, uint32_t inflight)
         {
             // Don't grow the limit if we are app limited
             if (inflight < limit / 2) {
@@ -28,5 +28,5 @@ class Gradient2Calculator
         double tolerance = 1.5;
         double smoothing = 0.2;
         uint32_t min_limit = 3;
-        uint32_t max_limit = 200;
+        uint32_t max_limit = 2048;
 };

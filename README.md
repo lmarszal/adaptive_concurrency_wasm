@@ -23,3 +23,4 @@ To debug WASM run:
  - https://github.com/Netflix/concurrency-limits/blob/85f7ec4b3d38633a3d3b399073cb9f7796e2ec11/concurrency-limits-core/src/main/java/com/netflix/concurrency/limits/limit/Gradient2Limit.java
  - https://banzaicloud.com/blog/envoy-wasm-filter/
  - https://github.com/proxy-wasm/proxy-wasm-cpp-sdk#docker
+ - https://github.com/solo-io/envoy-wasm-filters
