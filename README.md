@@ -13,7 +13,7 @@ Pod annotations:
 ```
 sidecar.istio.io/userVolume: '[{"name":"wasmfilters-dir","configMap": {"name": "adaptive-concurrency-wasm"}}]'
 sidecar.istio.io/userVolumeMount: '[{"mountPath":"/var/local/lib/wasm-filters","name":"wasmfilters-dir"}]'
-sidecar.istio.io/statsInclusionRegexps: http_static_concurrency_filter.*
+sidecar.istio.io/statsInclusionRegexps: http_static_concurrency_filter.*,http_adaptive_concurrency_filter.*
 ```
 
 To debug WASM run:

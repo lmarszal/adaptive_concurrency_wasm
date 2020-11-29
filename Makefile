@@ -5,7 +5,7 @@ all:
 	mkdir -p .wasm-cache
 	docker build -t wasmsdk:v2 -f envoy/api/wasm/cpp/Dockerfile-sdk envoy/api/wasm/cpp
 	docker run -v $(shell pwd)/source:/work -v ${shell pwd}/.wasm-cache:/root/emsdk/upstream/emscripten/cache -w /work  wasmsdk:v2 /build_wasm.sh
-	./hack/create_configmap.sh > example/configmap.yaml source/static_concurrency_filter.wasm
+	./hack/create_configmap.sh > example/configmap.yaml source/adaptive_concurrency_filter.wasm
 
 .PHONY:
 clean:

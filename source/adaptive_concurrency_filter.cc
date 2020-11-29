@@ -15,9 +15,6 @@ public:
   }
 
   void onTick() override {
-    inflight.record(num_rq_outstanding_.load());
-
-    inflight.resolve();
     throttled.resolve();
     limit.resolve();
     shortRtt.resolve();
@@ -39,25 +36,21 @@ public:
       return false;
     }
 
-    // TODO limit should be atomic
     limit_ = j["limit"].get<uint32_t>();
 
     return true;
   }
 
-  uint32_t limit_;
+  std::atomic<uint32_t> limit_;
   std::atomic<uint32_t> num_rq_outstanding_;
-  Counter<> throttled = Counter("http_static_concurrency_filter_requests_throttled");
+  Counter<> throttled = Counter("http_adaptive_concurrency_filter_requests_throttled");
 
   // TODO support config reloading
   Gradient2Controller ctrl = Gradient2Controller(50, 0.9, 60000);
-  Gauge<> limit = Gauge("http_static_concurrency_filter_requests_limit");
-  Gauge<> shortRtt = Gauge("http_static_concurrency_filter_requests_short_rtt");
-  Gauge<> longRtt = Gauge("http_static_concurrency_filter_requests_long_rtt");
-  Gauge<> maxInflight = Gauge("http_static_concurrency_filter_requests_max_inflight");
-
-private:
-  Gauge<> inflight = Gauge("http_static_concurrency_filter_requests_inflight");
+  Gauge<> limit = Gauge("http_adaptive_concurrency_filter_requests_limit");
+  Gauge<> shortRtt = Gauge("http_adaptive_concurrency_filter_requests_short_rtt");
+  Gauge<> longRtt = Gauge("http_adaptive_concurrency_filter_requests_long_rtt");
+  Gauge<> maxInflight = Gauge("http_adaptive_concurrency_filter_requests_max_inflight");
 };
 
 class PluginContext : public Context {
@@ -78,7 +71,7 @@ private:
 // first event of the request
 FilterHeadersStatus PluginContext::onRequestHeaders(uint32_t) {
   uint32_t current = root__->num_rq_outstanding_.fetch_add(1);
-  if (current >= root__->limit_) {
+  if (current >= root__->limit_.load()) {
     sendLocalResponse(503, "reached concurrency limit", nullptr, HeaderStringPairs());
     root__->throttled.increment(1);
     return FilterHeadersStatus::StopIteration;
@@ -94,11 +87,12 @@ void PluginContext::onLog() {
   auto now = getCurrentTimeNanoseconds();
   auto rtt = (uint32_t)((now - start) / 1000);
   
-  auto gradient = root__->ctrl.sample(now, rtt, root__->limit_, inflight);
+  auto gradient = root__->ctrl.sample(now, rtt, root__->limit_.load(), inflight);
   root__->limit.record(gradient.limit);
   root__->shortRtt.record(gradient.shortRtt);
   root__->longRtt.record(gradient.longRtt);
   root__->maxInflight.record(gradient.inflight);
+  root__->limit_.exchange(gradient.limit);
 }
 
-static RegisterContextFactory register_PluginContext(CONTEXT_FACTORY(PluginContext), ROOT_FACTORY(PluginRootContext), "lmarszal.http.static_concurrency_filter");
+static RegisterContextFactory register_PluginContext(CONTEXT_FACTORY(PluginContext), ROOT_FACTORY(PluginRootContext), "lmarszal.http.adaptive_concurrency_filter");
