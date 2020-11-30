@@ -31,12 +31,28 @@ public:
     }
 
     auto j = json::parse(cfg, nullptr, false);
+
     if (!j.contains("limit") || !j["limit"].is_number_integer()) {
       LOG_ERROR("limit (integer) is required");
       return false;
     }
-
     limit_ = j["limit"].get<uint32_t>();
+
+    uint32_t window_size = 5000;
+    if (j.contains("window_size_ms")) 
+    {
+      if (!j["window_size_ms"].is_number_integer()) {
+        LOG_ERROR("window_size_ms must be integer");
+        return false;
+      }
+      window_size = j["window_size_ms"].get<uint32_t>();
+    }
+    
+    auto old = ctrl.exchange(new Gradient2Controller(50, 0.9, window_size));
+    if (old != nullptr)
+    {
+      delete old;
+    }
 
     return true;
   }
@@ -45,8 +61,7 @@ public:
   std::atomic<uint32_t> num_rq_outstanding_;
   Counter<> throttled = Counter("http_adaptive_concurrency_filter_requests_throttled");
 
-  // TODO support config reloading
-  Gradient2Controller ctrl = Gradient2Controller(50, 0.9, 5000);
+  std::atomic<Gradient2Controller*> ctrl;
   Gauge<> limit = Gauge("http_adaptive_concurrency_filter_requests_limit");
   Gauge<> shortRtt = Gauge("http_adaptive_concurrency_filter_requests_short_rtt");
   Gauge<> longRtt = Gauge("http_adaptive_concurrency_filter_requests_long_rtt");
@@ -92,7 +107,11 @@ void PluginContext::onLog() {
     auto now = getCurrentTimeNanoseconds();
     auto rtt = ((double)now - start) * 1e-6;
     
-    auto gradient = root__->ctrl.sample(now, rtt, root__->limit_.load(), inflight);
+    auto ctrl = root__->ctrl.load();
+    if (ctrl == nullptr) {
+      return;
+    }
+    auto gradient = ctrl->sample(now, rtt, root__->limit_.load(), inflight);
     root__->limit.record(gradient.limit);
     root__->shortRtt.record(gradient.shortRtt);
     root__->longRtt.record(gradient.longRtt);
