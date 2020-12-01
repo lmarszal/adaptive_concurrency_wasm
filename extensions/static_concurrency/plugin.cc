@@ -4,7 +4,7 @@
 #include "proxy_wasm_common.h"
 #include "nlohmann_json.hpp"
 
-#include "common/gradient2_controller.hpp"
+#include "gradient2_controller.hpp"
 
 using json = nlohmann::json;
 
