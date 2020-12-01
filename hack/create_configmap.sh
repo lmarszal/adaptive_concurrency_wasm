@@ -9,5 +9,5 @@ binaryData:
 EOM
 
 CONTENT=`base64 ${2}`
-FILENAME=`${1}`
+FILENAME=${1}
 echo "  ${FILENAME}: ${CONTENT}"
