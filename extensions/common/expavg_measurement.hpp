@@ -1,36 +1,13 @@
 #pragma once
 
-#include <atomic>
-#include "proxy_wasm_intrinsics.h"
+#include <stdint.h>
 
 class ExpAvgMeasurement
 {
     public:
-        double add(uint32_t sample)
-        {
-            if (count_ < warmupWindow)
-            {
-                count_++;
-                sum_ += sample;
-                value_ = sum_/count_;
-            }
-            else
-            {
-                double factor = 2.0 / (window + 1);
-                value_ = value_ * (1.0 - factor) + sample * factor;
-            }
-            return value_;
-        }
-
-        void set(double value)
-        {
-            value_ = value;
-        }
-
-        double get()
-        {
-            return value_;
-        }
+        double add(uint32_t sample);
+        void set(double value);
+        double get();
 
     private:
         double value_ = 0.0;
