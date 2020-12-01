@@ -8,8 +8,6 @@ metadata:
 binaryData:
 EOM
 
-for FILE in "$@" ; do
-    CONTENT=`base64 ${FILE}`
-    FILENAME=`basename ${FILE}`
-    echo "  ${FILENAME}: ${CONTENT}"
-done
+CONTENT=`base64 ${2}`
+FILENAME=`${1}`
+echo "  ${FILENAME}: ${CONTENT}"

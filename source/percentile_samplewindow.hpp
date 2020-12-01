@@ -1,8 +1,7 @@
 #pragma once
 
 #include <atomic>
-#include <algorithm>
-#include "proxy_wasm_intrinsics.h"
+#include <stdint.h>
 
 class PercentileSampleWindow
 {
@@ -19,28 +18,12 @@ class PercentileSampleWindow
             delete this->samples_;
         }
 
-        void add(double rtt, uint32_t inflight)
-        {
-            uint32_t i = i_.fetch_add(1);
-            if (i < window)
-            {
-                samples_[i] = rtt;
-            }
-            while(max_inflight_.load() < inflight)
-            {
-                max_inflight_.exchange(inflight);
-            }
-        }
+        void add(double rtt, uint32_t inflight);
 
         /*
-         * Not get is not thread safe - you should exchange reference to sample window first and only then use get()
+         * Note get is not thread safe - you should exchange reference to sample window first and only then use get()
          */
-        double get()
-        {
-            std::sort(samples_, samples_+window);
-            auto k = std::clamp((uint32_t)std::ceil(window*percentile), (uint32_t)0, window-1);
-            return samples_[k];
-        }
+        double get();
 
         uint32_t maxInflight()
         {

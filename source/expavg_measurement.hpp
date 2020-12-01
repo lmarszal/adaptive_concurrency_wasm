@@ -5,7 +5,7 @@
 class ExpAvgMeasurement
 {
     public:
-        double add(uint32_t sample);
+        double add(double sample);
         void set(double value);
         double get();
 

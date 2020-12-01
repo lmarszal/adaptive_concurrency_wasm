@@ -1,7 +1,7 @@
 #include "expavg_measurement.hpp"
 #include <stdint.h>
 
-double ExpAvgMeasurement::add(uint32_t sample)
+double ExpAvgMeasurement::add(double sample)
 {
     if (count_ < warmupWindow)
     {
