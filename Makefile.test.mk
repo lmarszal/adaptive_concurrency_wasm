@@ -10,7 +10,7 @@ build_test: setup_test
 	$(RUN) "cd build && make"
 
 test: setup_test build_test
-	# TODO
+	$(RUN) "cd build && make CTEST_OUTPUT_ON_FAILURE=1 test"
 
 clean_test:
 	$(RUN) "cd build && make clean"
