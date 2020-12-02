@@ -2,12 +2,11 @@
 
 TOP := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
-all: build
+all: test build
 
 build: build_wasm
-	
 
 include Makefile.wasm.mk
+include Makefile.test.mk
 
-clean:
-	rm -fv $(wildcard extensions/**/*.wasm)
+clean: clean_wasm clean_test

@@ -1,4 +1,4 @@
-.PHONY: setup_wasm build_wasm
+.PHONY: setup_wasm build_wasm clean_wasm
 
 build_wasm: setup_wasm
 	$(foreach file, $(wildcard extensions/**/build_wasm.sh), cd $(TOP)/$(shell dirname $(file)) && bash ./build_wasm.sh &&) true
@@ -14,3 +14,6 @@ ENVOY_SHA=56b2f1495e121ab86e6de1497b3287023378bfc1
 envoy:
 	curl -L https://github.com/istio/envoy/archive/${ENVOY_SHA}.tar.gz | tar xz
 	mv envoy-${ENVOY_SHA} envoy
+
+clean_wasm:
+	rm -fv $(wildcard extensions/**/*.wasm)
