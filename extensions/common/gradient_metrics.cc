@@ -2,6 +2,11 @@
 
 void GradientMetrics::resolve(Gradient gradient)
 {
+    if(!started_.load())
+    {
+        return;
+    }
+
     // gradient metrics
     limit.record(gradient.limit);
     shortRtt.record(gradient.shortRtt);

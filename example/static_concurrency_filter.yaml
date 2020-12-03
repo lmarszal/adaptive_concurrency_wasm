@@ -34,6 +34,7 @@ spec:
               allow_precompiled: true
             configuration: |
               {
-                "limit": 5
+                "limit": 5,
+                "cluster": "inbound|80|http|nginx.default.svc.cluster.local"
               }
         name: envoy.filters.http.wasm

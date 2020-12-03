@@ -19,7 +19,7 @@ uint32_t Gradient2Calculator::calculateLimit(double shortRtt, double longRtt, ui
     // outliers.
     auto gradient = std::clamp(tolerance * longRtt / shortRtt, 0.5, 1.0);
     auto newLimit = gradient * limit + queueSize;
-    newLimit = limit * (1 - smoothing) + newLimit * smoothing;
+    newLimit = std::ceil((double)limit * (1 - smoothing) + newLimit * smoothing);
     uint32_t newLimit_ui32 = std::clamp((uint32_t)newLimit, min_limit, max_limit);
 
     return newLimit_ui32;

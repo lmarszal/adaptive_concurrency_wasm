@@ -1,10 +1,12 @@
 #pragma once
 
 #include <atomic>
+#include <string>
 #include "proxy_wasm_intrinsics.h"
 
 #include "gradient2_controller.hpp"
 #include "gradient_metrics.hpp"
+#include "shared_data.hpp"
 
 class GradientPluginRootContext: public RootContext {
 public:
@@ -15,14 +17,17 @@ public:
   bool onConfigure(size_t configuration_size) override;
   void onTick() override;
 
-  std::atomic<uint32_t> num_rq_outstanding_;
+  SharedInt num_rq_outstanding_ = SharedInt("lmarszal_adaptive_concurrency_num_rq_outstanding_");
   virtual uint32_t getLimit() = 0;
   void reportThrottled();
+  void startReporting();
   void sample(double rtt, uint32_t inflight);
+
+  std::string cluster_name_;
 
 protected:
   std::atomic<uint32_t> initial_limit_ = 0;
-  std::atomic<uint32_t> limit_ = 0;
+  SharedInt limit_ = SharedInt("lmarszal_adaptive_concurrency_limit_");
 
 private:
   std::atomic<Gradient2Controller*> ctrl_ = nullptr;
@@ -42,4 +47,5 @@ private:
   GradientPluginRootContext* root__;
   uint64_t start;
   int32_t inflight;
+  bool unwanted_cluster_ = false;
 };

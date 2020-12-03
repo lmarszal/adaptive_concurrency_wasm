@@ -13,6 +13,7 @@ spec:
       proxy:
         proxyVersion: '^1\.5.*'
       listener:
+        name: virtualInbound
         filterChain:
           filter:
             name: envoy.http_connection_manager
@@ -26,14 +27,15 @@ spec:
             name: adaptive_concurrency_filter
             rootId: lmarszal.http.adaptive_concurrency_filter
             vmConfig:
+              vmId: adaptive_concurrency_filter
+              runtime: envoy.wasm.runtime.v8
               code:
                 local:
                   filename: /var/local/lib/wasm-filters/adaptive_concurrency_filter.wasm
-              runtime: envoy.wasm.runtime.v8
-              vmId: adaptive_concurrency_filter
               allow_precompiled: true
             configuration: |
               {
-                "limit": 5
+                "limit": 5,
+                "cluster": "inbound|80|http|nginx.default.svc.cluster.local"
               }
         name: envoy.filters.http.wasm

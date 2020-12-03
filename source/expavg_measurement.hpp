@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdint.h>
+#include "shared_data.hpp"
 
 class ExpAvgMeasurement
 {
@@ -10,11 +11,9 @@ class ExpAvgMeasurement
         double get();
 
     private:
-        double value_ = 0.0;
-        double sum_ = 0.0;
+        SharedExpAvgMeasurementState state_ = SharedExpAvgMeasurementState("lmarszal_adaptive_concurrency_exp_avg_state");
         uint32_t window = 600;
         uint32_t warmupWindow = 10;
-        uint32_t count_ = 0;
 };
 
 

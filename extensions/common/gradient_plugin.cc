@@ -2,6 +2,7 @@
 
 #include "proxy_wasm_common.h"
 #include "nlohmann_json.hpp"
+#include <string>
 
 using json = nlohmann::json;
 
@@ -22,8 +23,9 @@ bool GradientPluginRootContext::onConfigure(size_t configuration_size) {
     }
     auto limit = j["limit"].get<uint32_t>();
     initial_limit_ = limit;
-    uint32_t zero;
-    limit_.compare_exchange_strong(zero, limit);
+    if (limit_.load() == 0) {
+        limit_.set(limit);
+    }
 
     uint32_t window_size = 5000;
     if (j.contains("window_size_ms")) 
@@ -41,6 +43,17 @@ bool GradientPluginRootContext::onConfigure(size_t configuration_size) {
         delete old;
     }
 
+    if (!j.contains("cluster") || !j["cluster"].is_string()) {
+        LOG_ERROR("cluster (string) is required");
+        return false;
+    }
+    auto cluster = j["cluster"].get<std::string>();
+    if (cluster_name_ != cluster) 
+    {
+        // TODO possible race condition
+        cluster_name_ = cluster;
+    }
+
     return true;
 }
 
@@ -51,7 +64,7 @@ void GradientPluginRootContext::onTick() {
     if (ctrl != nullptr)
     {
         auto gradient = ctrl->tick(now, limit);
-        limit_.exchange(gradient.limit);
+        limit_.set(gradient.limit);
         metrics_.resolve(gradient);
     }
     else
@@ -65,6 +78,11 @@ void GradientPluginRootContext::reportThrottled()
     metrics_.incThrottled();
 }
 
+void GradientPluginRootContext::startReporting()
+{
+    metrics_.startReporting();
+}
+
 void GradientPluginRootContext::sample(double rtt, uint32_t inflight)
 {
     auto ctrl = ctrl_.load();
@@ -76,6 +94,16 @@ void GradientPluginRootContext::sample(double rtt, uint32_t inflight)
 
 // first event of the request
 FilterHeadersStatus GradientPluginContext::onRequestHeaders(uint32_t) {
+  // hack - filter out unwanted clusters
+  std::string cluster_name;
+  getValue({"cluster_name"}, &cluster_name);
+  if (cluster_name != root__->cluster_name_)
+  {
+      unwanted_cluster_ = true;
+      return FilterHeadersStatus::Continue;
+  }
+
+  root__->startReporting();
   uint32_t current = root__->num_rq_outstanding_.fetch_add(1);
   inflight = -1;
   auto limit = root__->getLimit();
@@ -91,6 +119,12 @@ FilterHeadersStatus GradientPluginContext::onRequestHeaders(uint32_t) {
 
 // last event of the request
 void GradientPluginContext::onLog() {
+  // hack - filter out unwanted clusters
+  if(unwanted_cluster_)
+  {
+      return;
+  }
+
   auto now = getCurrentTimeNanoseconds();
   root__->num_rq_outstanding_.fetch_sub(1);
 
