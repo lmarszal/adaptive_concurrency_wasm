@@ -36,7 +36,6 @@ spec:
             configuration: |
               {
                 "limit": 5,
-                "window_size": 5000,
-                "vm_id": "adaptive_concurrency_filter"
+                "window_size": 5000
               }
         name: envoy.filters.http.wasm

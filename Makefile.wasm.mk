@@ -5,7 +5,7 @@ TOP := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 build_wasm: setup_wasm
 	$(foreach file, $(wildcard extensions/**/build_wasm.sh), cd $(TOP)/$(shell dirname $(file)) && bash ./build_wasm.sh &&) true
 	./hack/create_configmap.sh adaptive_concurrency_filter.wasm extensions/adaptive_concurrency/plugin.wasm > example/adaptive_concurrency_configmap.yaml
-	#./hack/create_configmap.sh static_concurrency_filter.wasm extensions/static_concurrency/plugin.wasm > example/static_concurrency_configmap.yaml
+	./hack/create_configmap.sh static_concurrency_filter.wasm extensions/static_concurrency/plugin.wasm > example/static_concurrency_configmap.yaml
 
 setup_wasm: envoy
 	mkdir -p .wasm-cache

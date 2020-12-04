@@ -34,7 +34,6 @@ spec:
               allow_precompiled: true
             configuration: |
               {
-                "limit": 50,
-                "vm_id": "static_concurrency_filter"
+                "limit": 50
               }
         name: envoy.filters.http.wasm
