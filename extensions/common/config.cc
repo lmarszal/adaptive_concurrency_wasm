@@ -4,32 +4,27 @@
 
 using nlohmann::json;
 
-const char* config_default_vm_name = "adaptive_concurrency_filter";
-
-void to_json(json& j, const Config& c) {
-    j = json{{"limit", c.limit}, {"window_size", c.window_size}, {"vm_id", c.vm_name}};
-}
-
-void from_json(const json& j, Config& c) {
-    j.at("limit").get_to(c.limit);
-    j.at("window_size").get_to(c.window_size);
-    j.at("vm_name").get_to(c.vm_name);
-}
-
 Config load_config()
 {
     auto cfg_string = getConfiguration()->toString();
-    Config cfg;
+    Config cfg = Config { 0, 0 };
 
     // parse from json
     if (!json::accept(cfg_string)) {
         LOG_ERROR("invalid configuration json");
-        cfg = Config { 0, 0 };
+        
     }
     else
     {
         auto j = json::parse(cfg_string, nullptr, false);
-        cfg = j.get<Config>();
+        if (j.contains("limit") && j["limit"].is_number_unsigned())
+        {
+            cfg.limit = j["limit"].get<uint32_t>();
+        }
+        if (j.contains("window_size") && j["window_size"].is_number_unsigned())
+        {
+            cfg.window_size = j["window_size"].get<uint32_t>();
+        }
     }
 
     // apply defaults
@@ -41,15 +36,11 @@ Config load_config()
     {
         cfg.window_size = config_default_window_size;
     }
-    if (cfg.vm_name.length() <= 0)
-    {
-        cfg.vm_name = config_default_vm_name;
-    }
 
     return cfg;
 }
 
 Config default_config()
 {
-    return Config { config_default_limit, config_default_window_size, config_default_vm_name };
+    return Config { config_default_limit, config_default_window_size };
 }

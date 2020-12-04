@@ -36,9 +36,7 @@ public:
 
     std::string toString()
     {
-        char buffer[1024];
-        sprintf(buffer, "%lf:%lf:%u", value_, sum_, count_);
-        return std::string(buffer);
+        return std::to_string(value_) + ":" + std::to_string(sum_) + ":" + std::to_string(count_);
     }
 private:
     ExpAvgMeasurement(double value, double sum, double count)

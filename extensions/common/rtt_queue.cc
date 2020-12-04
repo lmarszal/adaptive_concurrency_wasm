@@ -20,9 +20,10 @@ void RttQueue::Enqueue(RttData elem)
     enqueueSharedQueue(rtt_queue_token_, elem.toString());
 }
 
-void RttQueue::Ensure(std::string vm_name)
+void RttQueue::Ensure()
 {
-    auto res = resolveSharedQueue(vm_name, RTT_QUEUE_NAME, &rtt_queue_token_);
+    auto vm_id = getProperty({"plugin_vm_id"})->get()->toString();
+    auto res = resolveSharedQueue(vm_id, RTT_QUEUE_NAME, &rtt_queue_token_);
     if (res != WasmResult::Ok)
     {
         registerSharedQueue(RTT_QUEUE_NAME, &rtt_queue_token_);

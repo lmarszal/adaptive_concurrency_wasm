@@ -18,16 +18,17 @@ public:
     bool onStart(size_t /* vm_configuration_size */) override;
     void onTick() override;
     bool onConfigure(size_t configuration_size) override;
-    virtual uint32_t getLimit();
+    virtual uint32_t getLimitInternal();
 
     RttQueue rtt_queue_;
 private:
     Gradient2Controller ctrl = Gradient2Controller(100, 0.9, config_default_window_size);
     LeaderTokenLease lease_;
-    Config config_ = default_config();
 
     void onLeaderStart(uint64_t now_ns);
     void onLeaderTick(uint64_t now_ns);
+protected:
+  Config config_ = default_config();
 };
 
 class PluginContext : public Context {

@@ -5,7 +5,7 @@
 std::string getExpAvgState();
 void setExpAvgState(std::string state);
 
-void ensureLimit(uint32_t initial);
+void ensureLimit();
 uint32_t getLimit();
 void setLimit(uint32_t limit);
 

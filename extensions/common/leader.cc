@@ -36,9 +36,7 @@ public:
 
     std::string toString()
     {
-        char buffer[1024];
-        sprintf(buffer, "%llu:%u", lease_end_, owner_id_);
-        return std::string(buffer);
+        return std::to_string(lease_end_) + ":" + std::to_string(owner_id_);
     }
 private:
     Lease(uint64_t lease_end, uint32_t owner_id)

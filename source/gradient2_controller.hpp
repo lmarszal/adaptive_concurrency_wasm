@@ -41,6 +41,10 @@ class Gradient2Controller
             next_update_time_ = now_ns + sample_window_time_ns;
             sample_window_.reset();
         }
+        void setSampleWindowTime(uint64_t sample_window_time_ms)
+        {
+            sample_window_time_ns = sample_window_time_ms * 1e6;
+        }
         void sample(double rtt, uint32_t inflight);
         Gradient update(uint64_t now_ns, uint32_t limit);
 

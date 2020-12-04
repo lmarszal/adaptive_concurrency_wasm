@@ -8,9 +8,9 @@ public:
   explicit SCPluginRootContext(uint32_t id, StringView root_id): PluginRootContext(id, root_id) {
   }
 
-  uint32_t getLimit() override
+  uint32_t getLimitInternal() override
   {
-    return 5;
+    return config_.limit;
   }
 };
 

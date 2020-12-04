@@ -26,9 +26,7 @@ public:
 
     std::string toString()
     {
-        char buffer[1024];
-        sprintf(buffer, "%lf:%u", rtt_, inflight_);
-        return std::string(buffer);
+        return std::to_string(rtt_) + ":" + std::to_string(inflight_);
     }
 
     double rtt()
@@ -56,7 +54,7 @@ public:
 
     bool Dequeue(RttData& elem);
     void Enqueue(RttData elem);
-    void Ensure(std::string vm_name);
+    void Ensure();
 private:
     uint32_t rtt_queue_token_;
     uint32_t unique_id_;

@@ -10,7 +10,6 @@ struct Config
 {
     uint32_t limit;
     uint32_t window_size;
-    std::string vm_name;
 };
 
 Config load_config();

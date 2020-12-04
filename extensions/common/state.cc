@@ -31,15 +31,13 @@ void setExpAvgState(std::string state)
 
 const char* LIMIT_STATE_NAME = "proxy.lmarszal.adaptive_concurrency.limit";
 
-void ensureLimit(uint32_t initial)
+void ensureLimit()
 {
     WasmDataPtr data;
     auto res = getSharedData(LIMIT_STATE_NAME, &data);
     if (res == WasmResult::NotFound)
     {
-        char buffer[128];
-        sprintf(buffer, "%u", initial);
-        setSharedData(LIMIT_STATE_NAME, buffer);
+        setSharedData(LIMIT_STATE_NAME, "0");
     }
 }
 
@@ -67,9 +65,7 @@ uint32_t getLimit()
 
 void setLimit(uint32_t limit)
 {
-    char buffer[128];
-    sprintf(buffer, "%u", limit);
-    setSharedData(LIMIT_STATE_NAME, buffer);
+    setSharedData(LIMIT_STATE_NAME, std::to_string(limit));
 }
 
 const char* INFLIGHT_STATE_NAME = "proxy.lmarszal.adaptive_concurrency.inflight";
@@ -103,9 +99,7 @@ int32_t addInflight(int32_t add)
         sscanf(data->toString().c_str(), "%d", &inflight);
         inflight += add;
 
-        char buffer[128];
-        sprintf(buffer, "%u", inflight);
-        res = setSharedData(INFLIGHT_STATE_NAME, buffer, cas);
+        res = setSharedData(INFLIGHT_STATE_NAME, std::to_string(inflight), cas);
         if (res == WasmResult::Ok)
         {
             // hurrey!

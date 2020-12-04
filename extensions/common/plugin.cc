@@ -14,10 +14,10 @@ Counter<> THROTTLED_METRIC = Counter<>("http_adaptive_concurrency_filter_request
 bool PluginRootContext::onStart(size_t /* vm_configuration_size */)
 {
     // ensure queue is created
-    rtt_queue_.Ensure(config_.vm_name);
+    rtt_queue_.Ensure();
 
     // ensure state is initialized
-    ensureLimit(5);
+    ensureLimit();
     ensureInflight();
 
     return true;
@@ -59,7 +59,8 @@ void PluginRootContext::onLeaderTick(uint64_t now_ns)
 
     auto expAvgState = getExpAvgState();
     ctrl.restoreMeasurement(expAvgState);
-    auto limit = getLimit();
+    ctrl.setSampleWindowTime(config_.window_size);
+    auto limit = getLimitInternal();
     auto gradient = ctrl.update(now_ns, limit);
     setExpAvgState(ctrl.storeMeasurement());
     setLimit(gradient.limit);
@@ -79,20 +80,24 @@ void PluginRootContext::onLeaderTick(uint64_t now_ns)
 bool PluginRootContext::onConfigure(size_t configuration_size)
 {
     config_ = load_config();
-    rtt_queue_.Ensure(config_.vm_name);
     return true;
 }
 
-uint32_t PluginRootContext::getLimit()
+uint32_t PluginRootContext::getLimitInternal()
 {
-    return getLimit();
+    auto limit = getLimit();
+    if (limit == 0) // if not initialized, set to default
+    {
+        limit = config_.limit;
+    }
+    return limit;
 }
 
 FilterHeadersStatus PluginContext::onRequestHeaders(uint32_t)
 {
     start_ = getCurrentTimeNanoseconds();
     auto current = incrementInflight();
-    auto limit = root__->getLimit();
+    auto limit = root__->getLimitInternal();
     if (current > limit && limit > 0)
     {
         sendLocalResponse(503, "reached concurrency limit", nullptr, HeaderStringPairs());
