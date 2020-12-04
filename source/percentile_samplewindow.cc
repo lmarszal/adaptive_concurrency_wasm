@@ -5,14 +5,13 @@
 
 void PercentileSampleWindow::add(double rtt, uint32_t inflight)
 {
-    uint32_t i = i_.fetch_add(1);
-    if (i < window)
+    if (i_++ < window)
     {
-        samples_[i] = rtt;
+        samples_[i_] = rtt;
     }
-    while(max_inflight_.load() < inflight)
+    if (max_inflight_ < inflight)
     {
-        max_inflight_.exchange(inflight);
+        max_inflight_ = inflight;
     }
 }
 

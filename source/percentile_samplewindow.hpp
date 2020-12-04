@@ -10,7 +10,7 @@ class PercentileSampleWindow
         {
             this->window = window;
             this->percentile = percentile;
-            this->samples_ = new double[window]; // TODO figure out how to reuse this buffer
+            this->samples_ = new double[window];
         }
 
         ~PercentileSampleWindow()
@@ -27,18 +27,24 @@ class PercentileSampleWindow
 
         uint32_t maxInflight()
         {
-            return max_inflight_.load();
+            return max_inflight_;
         }
 
         bool ready()
         {
-            return i_.load() > window;
+            return i_ > window;
+        }
+
+        void reset()
+        {
+            i_ = 0;
+            max_inflight_ = 0;
         }
 
     private:
         double percentile;
         uint32_t window;
-        std::atomic<uint32_t> i_ = 0;
-        std::atomic<uint32_t> max_inflight_ = 0;
+        uint32_t i_ = 0;
+        uint32_t max_inflight_ = 0;
         double* samples_;
 };

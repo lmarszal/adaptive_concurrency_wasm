@@ -21,15 +21,13 @@ target_link_libraries(libgtest
     "${binary_dir}/lib/libgtest.a")
 include_directories("${source_dir}/googletest/include")
 
-add_subdirectory(mock)
-
 # tests
 file(GLOB test_cases *.cc)
 foreach(case_file ${test_cases})
     get_filename_component( case_name ${case_file} NAME_WE )
     set (case_name test_${case_name})
     add_executable(${case_name} ${case_file})
-    target_link_libraries(${case_name} libgtest ac acmock)
+    target_link_libraries(${case_name} libgtest ac)
     set_property(TARGET ${case_name} PROPERTY CXX_STANDARD 17)
     add_test(NAME ${case_name}
              COMMAND ${PROJECT_BINARY_DIR}/tests/${case_name}

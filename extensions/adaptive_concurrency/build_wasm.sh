@@ -2,7 +2,7 @@
 
 set -e
 
-docker run -e uid="$(id -u)" -e gid="$(id -g)" \
+docker run --rm -e uid="$(id -u)" -e gid="$(id -g)" \
     -v $PWD:/work -w /work \
     -v $(realpath $PWD/../../extensions):/work/extensions \
     -v $(realpath $PWD/../../source):/work/source \

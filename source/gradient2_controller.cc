@@ -2,28 +2,24 @@
 
 void Gradient2Controller::sample(double rtt, uint32_t inflight)
 {
-    auto sample_window = sample_window_.load();
-    sample_window->add(rtt, inflight);
+    sample_window_.add(rtt, inflight);
 }
 
-Gradient Gradient2Controller::tick(uint64_t now_ns, uint32_t limit)
+Gradient Gradient2Controller::update(uint64_t now_ns, uint32_t limit)
 {
-    std::lock_guard<std::mutex> guard(limit_mutation_mtx_);
-    // TODO synchronize-exchange next_update_time
-    if (now_ns > next_update_time_.load())
-    {
-        auto sample_window = sample_window_.exchange(new PercentileSampleWindow(sample_window_size, sample_window_percentile));
+    gradient_.limit = limit; // assing in case gradient object is empty
 
-        uint64_t next_update_time = now_ns + ((uint64_t)sample_window_time_ms * 1e+6);
-        next_update_time_.exchange(next_update_time);
+    if (now_ns > next_update_time_)
+    {
+        next_update_time_ = now_ns + sample_window_time_ns;
 
         double shortRtt = 0;
         double longRtt = measurement_.get();
-        auto maxInflight = sample_window->maxInflight();
+        auto maxInflight = sample_window_.maxInflight();
 
-        if (sample_window->ready())
+        if (sample_window_.ready())
         {
-            shortRtt = sample_window->get();
+            shortRtt = sample_window_.get();
             longRtt = measurement_.add(shortRtt);
         
             // If the long RTT is substantially larger than the short RTT then reduce the long RTT measurement.
@@ -39,9 +35,8 @@ Gradient Gradient2Controller::tick(uint64_t now_ns, uint32_t limit)
 
         gradient_ = (struct Gradient){.limit = limit, .shortRtt = shortRtt, .longRtt = longRtt, .inflight = maxInflight};
 
-        // TODO risk of race condition
-        delete sample_window;
+        sample_window_.reset();
     }
 
-    return gradient_.load();
+    return gradient_;
 }

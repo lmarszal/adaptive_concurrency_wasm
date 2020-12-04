@@ -1,23 +1,23 @@
 #include <atomic>
 
 #include "proxy_wasm_intrinsics.h"
-#include "gradient_plugin.hpp"
+#include "plugin.hpp"
 
-class PluginRootContext: public GradientPluginRootContext {
+class SCPluginRootContext: public PluginRootContext {
 public:
-  explicit PluginRootContext(uint32_t id, StringView root_id): GradientPluginRootContext(id, root_id) {
+  explicit SCPluginRootContext(uint32_t id, StringView root_id): PluginRootContext(id, root_id) {
   }
 
   uint32_t getLimit() override
   {
-    return initial_limit_.load();
+    return 5;
   }
 };
 
-class PluginContext : public GradientPluginContext {
+class SCPluginContext : public PluginContext {
 public:
-  explicit PluginContext(uint32_t id, RootContext* root) : GradientPluginContext(id, root) {
+  explicit SCPluginContext(uint32_t id, RootContext* root) : PluginContext(id, root) {
   }
 };
 
-static RegisterContextFactory register_PluginContext(CONTEXT_FACTORY(PluginContext), ROOT_FACTORY(PluginRootContext), "lmarszal.http.static_concurrency_filter");
+static RegisterContextFactory register_PluginContext(CONTEXT_FACTORY(SCPluginContext), ROOT_FACTORY(SCPluginRootContext), "lmarszal.http.static_concurrency_filter");

@@ -36,6 +36,7 @@ spec:
             configuration: |
               {
                 "limit": 5,
-                "cluster": "inbound|80|http|nginx.default.svc.cluster.local"
+                "window_size": 5000,
+                "vm_id": "adaptive_concurrency_filter"
               }
         name: envoy.filters.http.wasm
