@@ -64,7 +64,7 @@ TEST(Gradient2Calculator, should_stabilize_when_short_and_long_rtt_are_close)
     }
 }
 
-TEST(Gradient2Calculator, dont_grow_the_limit_when_were_app_limited)
+TEST(Gradient2Calculator, slightly_shrink_the_limit_when_were_app_limited)
 {
     Gradient2Calculator sut;
     double shortRtt = 30;
@@ -73,5 +73,5 @@ TEST(Gradient2Calculator, dont_grow_the_limit_when_were_app_limited)
     uint32_t inflight = 2;
 
     auto actual = sut.calculateLimit(shortRtt, longRtt, limit, inflight);
-    EXPECT_EQ(actual, limit);
+    EXPECT_EQ(actual, 95);
 }

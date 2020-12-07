@@ -22,7 +22,7 @@ public:
 
     RttQueue rtt_queue_;
 private:
-    Gradient2Controller ctrl = Gradient2Controller(100, 0.9, config_default_window_size);
+    Gradient2Controller ctrl = Gradient2Controller(50, 0.9, config_default_window_size);
     LeaderTokenLease lease_;
 
     void onLeaderStart(uint64_t now_ns);

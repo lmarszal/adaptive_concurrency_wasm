@@ -8,9 +8,9 @@ uint32_t Gradient2Calculator::calculateLimit(double shortRtt, double longRtt, ui
     // allow some queueing
     auto queueSize = std::max(std::sqrt(limit), 4.0);
 
-    // Don't grow the limit if we are app limited
+    // Slightly shrink the limit if we are app limited
     if (inflight < limit / 2) {
-        return limit;
+        return std::floor(0.95 * limit);
     }
 
     // Rtt could be higher than rtt_noload because of smoothing rtt noload updates

@@ -79,7 +79,12 @@ void PluginRootContext::onLeaderTick(uint64_t now_ns)
 
 bool PluginRootContext::onConfigure(size_t configuration_size)
 {
-    config_ = load_config();
+    auto config = load_config();
+    if (config.limit != config_.limit)
+    {
+        setLimit(config.limit);
+    }
+    config_ = config;
     return true;
 }
 
