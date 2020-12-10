@@ -44,6 +44,18 @@ TEST(Gradient2Calculator, should_shrink_limit_when_shortRTT_is_bigger_than_longR
     EXPECT_LT(actual, limit);
 }
 
+TEST(Gradient2Calculator, should_shrink_limit_when_shortRTT_is_bigger_than_longRTT_2)
+{
+    Gradient2Calculator sut;
+    double shortRtt = 197;
+    double longRtt = 28;
+    uint32_t limit = 7;
+    uint32_t inflight = 8;
+
+    auto actual = sut.calculateLimit(shortRtt, longRtt, limit, inflight);
+    EXPECT_LT(actual, limit);
+}
+
 TEST(Gradient2Calculator, should_stabilize_when_short_and_long_rtt_are_close)
 {
     Gradient2Calculator sut;
@@ -52,12 +64,12 @@ TEST(Gradient2Calculator, should_stabilize_when_short_and_long_rtt_are_close)
 
     for (int i=0; i<1000; i++)
     {
-        auto actual = sut.calculateLimit(60, 30, limit, limit);
+        auto actual = sut.calculateLimit(50, 30, limit, limit);
         EXPECT_GT(1.0 * actual, 0.8 * initial_limit) << "i=" << i;
         EXPECT_LT(1.0 * actual, 1.2 * initial_limit) << "i=" << i;
         limit = actual;
 
-        actual = sut.calculateLimit(45, 30, limit, limit);
+        actual = sut.calculateLimit(40, 30, limit, limit);
         EXPECT_GT(1.0 * actual, 0.8 * initial_limit) << "i=" << i;
         EXPECT_LT(1.0 * actual, 1.2 * initial_limit) << "i=" << i;
         limit = actual;

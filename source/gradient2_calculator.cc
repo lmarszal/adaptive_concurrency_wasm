@@ -2,6 +2,28 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstdio>
+
+uint32_t smoothLimit(uint32_t oldLmit, double newLimit)
+{
+    const double smoothing = 0.2;
+    auto limit = (uint32_t)std::floor((double)oldLmit * (1.0 - smoothing) + newLimit * smoothing);
+    if (limit != oldLmit)
+    {
+        return limit;
+    }
+
+    // smoothing shouldn't cause limit to be constant
+    if (newLimit > oldLmit)
+    {
+        return oldLmit+1;
+    }
+    else 
+    {
+        return oldLmit-1;
+    }
+    
+}
 
 uint32_t Gradient2Calculator::calculateLimit(double shortRtt, double longRtt, uint32_t limit, uint32_t inflight)
 {
@@ -17,10 +39,14 @@ uint32_t Gradient2Calculator::calculateLimit(double shortRtt, double longRtt, ui
     // so set to 1.0 to indicate no queuing.  Otherwise calculate the slope and don't
     // allow it to be reduced by more than half to avoid aggressive load-shedding due to 
     // outliers.
-    auto gradient = std::clamp(tolerance * longRtt / shortRtt, 0.5, 1.0);
-    auto newLimit = gradient * limit + queueSize;
-    newLimit = std::ceil((double)limit * (1 - smoothing) + newLimit * smoothing);
-    uint32_t newLimit_ui32 = std::clamp((uint32_t)newLimit, min_limit, max_limit);
+    auto gradient = std::clamp((tolerance * longRtt) / shortRtt, 0.5, 1.0);
+    auto newLimit = gradient * limit;
+    // allow some queueing if system is stable
+    if (gradient > 0.75)
+    {
+        newLimit += queueSize;
+    }
+    uint32_t newLimit_ui32 = smoothLimit(limit, newLimit);
 
-    return newLimit_ui32;
+    return std::clamp(newLimit_ui32, min_limit, max_limit);
 }

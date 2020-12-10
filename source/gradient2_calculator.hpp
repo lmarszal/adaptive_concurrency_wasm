@@ -9,7 +9,6 @@ class Gradient2Calculator
 
     private:
         double tolerance = 1.5;
-        double smoothing = 0.2;
         uint32_t min_limit = 3;
         uint32_t max_limit = 2048;
 };
