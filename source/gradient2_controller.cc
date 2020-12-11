@@ -27,6 +27,8 @@ Gradient Gradient2Controller::update(uint64_t now_ns, uint32_t limit)
             // long RTT without waiting for the exponential smoothing helps bring the system back to steady state.
             if (longRtt / shortRtt > 2.0) {
                 measurement_.set(longRtt * 0.95);
+            } else if ((longRtt / shortRtt > 1.4) && (limit / maxInflight > 2)) {
+                measurement_.set(longRtt * 0.95);
             }
 
             limit = calculator_.calculateLimit(shortRtt, longRtt, limit, maxInflight);

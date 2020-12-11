@@ -2,6 +2,8 @@
 #include "rtt_queue.hpp"
 #include "state.hpp"
 #include "expavg_measurement.hpp"
+#include "prometheus.hpp"
+#include <cstdio>
 
 const uint32_t initial_limit = 5;
 
@@ -84,7 +86,23 @@ bool PluginRootContext::onConfigure(size_t configuration_size)
     {
         setLimit(config.limit);
     }
+
+    auto shared_state_loaded = getSharedStateLoaded();
+    if (!config.prometheus_cluster_name.empty() && !shared_state_loaded)
+    {
+        if (!config.prometheus_longrtt_query.empty())
+        {
+            prometheus_query(this, config.prometheus_cluster_name, config.prometheus_longrtt_query, on_longRtt_query_result);
+        }
+        if (!config.prometheus_limit_query.empty())
+        {
+            prometheus_query(this, config.prometheus_cluster_name, config.prometheus_limit_query, on_limit_query_result);
+        }
+        setSharedStateLoaded();
+    }
+
     config_ = config;
+
     return true;
 }
 

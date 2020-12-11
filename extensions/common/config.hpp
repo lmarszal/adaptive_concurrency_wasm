@@ -10,6 +10,9 @@ struct Config
 {
     uint32_t limit;
     uint32_t window_size;
+    std::string prometheus_cluster_name;
+    std::string prometheus_longrtt_query;
+    std::string prometheus_limit_query;
 };
 
 Config load_config();

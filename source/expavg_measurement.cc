@@ -11,7 +11,7 @@ double ExpAvgMeasurement::add(double sample)
     }
     else
     {
-        double factor = 2.0 / (window + 1);
+        double factor = 2.0 / ((double)window + 1.0);
         value_ = value_ * (1.0 - factor) + sample * factor;
     }
     return value_;

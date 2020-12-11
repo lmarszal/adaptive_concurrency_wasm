@@ -25,6 +25,18 @@ Config load_config()
         {
             cfg.window_size = j["window_size"].get<uint32_t>();
         }
+        if (j.contains("prometheus_cluster_name"))
+        {
+            cfg.prometheus_cluster_name = j["prometheus_cluster_name"].get<std::string>();
+        }
+        if (j.contains("prometheus_longrtt_query"))
+        {
+            cfg.prometheus_longrtt_query = j["prometheus_longrtt_query"].get<std::string>();
+        }
+        if (j.contains("prometheus_limit_query"))
+        {
+            cfg.prometheus_limit_query = j["prometheus_limit_query"].get<std::string>();
+        }
     }
 
     // apply defaults

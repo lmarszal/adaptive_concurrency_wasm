@@ -14,6 +14,13 @@ public:
         count_ = 0;
     }
 
+    ExpAvgMeasurement(double value, double sum, uint32_t count)
+    {
+        value_ = value;
+        sum_ = sum;
+        count_ = count;
+    }
+
     double add(double sample);
     void set(double value);
     double get();
@@ -39,13 +46,6 @@ public:
         return std::to_string(value_) + ":" + std::to_string(sum_) + ":" + std::to_string(count_);
     }
 private:
-    ExpAvgMeasurement(double value, double sum, double count)
-    {
-        value_ = value;
-        sum_ = sum;
-        count_ = count;
-    }
-
     uint32_t window = 600;
     uint32_t warmupWindow = 10;
 

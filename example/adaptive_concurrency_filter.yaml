@@ -36,6 +36,9 @@ spec:
             configuration: |
               {
                 "limit": 5,
-                "window_size": 5000
+                "window_size": 5000,
+                "prometheus_cluster_name": "outbound|9090||prometheus.istio-system.svc.cluster.local",
+                "prometheus_limit_query": "envoy_http_adaptive_concurrency_filter_requests_limit{pod_name=~\"nginx-.*\"}",
+                "prometheus_longrtt_query": "envoy_http_adaptive_concurrency_filter_requests_long_rtt{pod_name=~\"nginx-.*\"}"
               }
         name: envoy.filters.http.wasm

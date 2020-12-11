@@ -128,3 +128,17 @@ int32_t decrementInflight()
 {
     return addInflight(-1);
 }
+
+const char* SHARED_STATE_FLAG_NAME = "proxy.lmarszal.adaptive_concurrency.shared_state_loaded";
+
+bool getSharedStateLoaded()
+{
+    WasmDataPtr data;
+    auto res = getSharedData(SHARED_STATE_FLAG_NAME, &data);
+    return res == WasmResult::Ok;
+}
+
+void setSharedStateLoaded()
+{
+    setSharedData(SHARED_STATE_FLAG_NAME, "TRUE");
+}
