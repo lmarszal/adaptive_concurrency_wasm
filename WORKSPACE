@@ -64,10 +64,11 @@ git_repository(
     tag = "release-1.10.0"
 )
 
-# json
+# nlohmann json
 new_git_repository (
   name = "nlohmann_json",
-  remote = "https://github.com/nlohmann/json.git",
+  remote = "https://github.com/nlohmann/json",
   tag = "v3.9.1",
+  workspace_file_content = 'workspace(name = "nlohmann_json")',
   build_file = "//bazel/external:json.BUILD",
 )
