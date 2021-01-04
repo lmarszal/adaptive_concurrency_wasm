@@ -1,4 +1,2 @@
-envoy
-.vscode
-.wasm-cache
-build
+bazel-*
+.bazel
