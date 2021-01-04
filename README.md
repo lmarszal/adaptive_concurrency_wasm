@@ -1,7 +1,7 @@
 # adaptive_concurrency_wasm
 Gradient2 Adaptive Concurrency Filter WASM plugin for Envoy
 
-## Build (temp)
+## Build
 
 1) Run `make` (build project)
 1) Deploy wasm binaries: run `kubectl apply -f example/adaptive_concurrency_configmap.yaml`
@@ -11,7 +11,7 @@ Gradient2 Adaptive Concurrency Filter WASM plugin for Envoy
     sidecar.istio.io/userVolumeMount: '[{"mountPath":"/var/local/lib/wasm-filters","name":"wasmfilters-dir"}]'
     sidecar.istio.io/statsInclusionRegexps: http_adaptive_concurrency_filter.*
     ```
-4) Deploy filter: run `kubectl apply -f example/adaptive_concurrency_filter.yaml` (adaptive concurrency filter)
+4) Deploy filter: run `kubectl apply -f example/adaptive_concurrency_filter.yaml`
 
 To debug WASM run:
 `kubectl exec -it $POD  -c istio-proxy -- curl -X POST localhost:15000/logging\?wasm=debug`
