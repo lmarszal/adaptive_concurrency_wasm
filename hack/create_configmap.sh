@@ -8,6 +8,6 @@ metadata:
 binaryData:
 EOM
 
-CONTENT=`base64 ${2}`
+CONTENT=`base64 -w 0 -i ${2}`
 FILENAME=${1}
 echo "  ${FILENAME}: ${CONTENT}"

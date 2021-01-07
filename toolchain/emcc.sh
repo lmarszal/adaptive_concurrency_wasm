@@ -3,7 +3,7 @@ set -euo pipefail
 
 . $(dirname $0)/common.sh
 
-emcc -s EMIT_EMSCRIPTEN_METADATA=1 -s STANDALONE_WASM=1 -s EXPORTED_FUNCTIONS=['_malloc','_free'] "$@"
+emcc -s EMIT_EMSCRIPTEN_METADATA=1 -s STANDALONE_WASM=1 -s EXPORTED_FUNCTIONS=['_malloc','_free'] -DNDEBUG -Oz -flto "$@"
 
 # clang doesn't support `-no-canonical-system-headers` so sed it
 # find the .d file in the args and fix it:
