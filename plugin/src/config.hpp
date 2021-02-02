@@ -15,6 +15,6 @@ struct Config
     std::string prometheus_limit_query;
 };
 
-Config load_config();
+Config load_config(size_t config_buffer_length);
 
 Config default_config();

@@ -4,11 +4,10 @@
 
 #include "google/protobuf/util/json_util.h"
 #include "proxy_wasm_intrinsics.h"
-#include "filter.pb.h"
 
 class AddHeaderRootContext : public RootContext {
 public:
-  explicit AddHeaderRootContext(uint32_t id, StringView root_id) : RootContext(id, root_id) {}
+  explicit AddHeaderRootContext(uint32_t id, std::string_view root_id) : RootContext(id, root_id) {}
   bool onConfigure(size_t /* configuration_size */) override;
 
   bool onStart(size_t) override;

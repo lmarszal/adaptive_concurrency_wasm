@@ -81,7 +81,7 @@ void PluginRootContext::onLeaderTick(uint64_t now_ns)
 
 bool PluginRootContext::onConfigure(size_t configuration_size)
 {
-    auto config = load_config();
+    auto config = load_config(configuration_size);
     if (config.limit != config_.limit)
     {
         setLimit(config.limit);
@@ -116,7 +116,7 @@ uint32_t PluginRootContext::getLimitInternal()
     return limit;
 }
 
-FilterHeadersStatus PluginContext::onRequestHeaders(uint32_t)
+FilterHeadersStatus PluginContext::onRequestHeaders(uint32_t, bool)
 {
     start_ = getCurrentTimeNanoseconds();
     auto current = incrementInflight();

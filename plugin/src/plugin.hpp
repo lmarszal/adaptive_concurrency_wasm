@@ -11,13 +11,13 @@ const uint64_t tick_period_ns = (uint64_t)tick_period_ms * 1e6;
 
 class PluginRootContext: public RootContext {
 public:
-    explicit PluginRootContext(uint32_t id, StringView root_id): RootContext(id, root_id) {
+    explicit PluginRootContext(uint32_t id, std::string_view root_id): RootContext(id, root_id) {
         proxy_set_tick_period_milliseconds(tick_period_ms);
     }
 
     bool onStart(size_t /* vm_configuration_size */) override;
     void onTick() override;
-    bool onConfigure(size_t configuration_size) override;
+    bool onConfigure(size_t /* configuration_size */) override;
     uint32_t getLimitInternal();
 
     RttQueue rtt_queue_;
@@ -36,7 +36,7 @@ public:
     this->root__ = (PluginRootContext*)root;
   }
 
-  FilterHeadersStatus onRequestHeaders(uint32_t) override;
+  FilterHeadersStatus onRequestHeaders(uint32_t, bool) override;
   void onLog() override;
 
   void rttEnqueue(RttData data)

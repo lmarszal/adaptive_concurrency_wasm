@@ -4,9 +4,10 @@
 
 using nlohmann::json;
 
-Config load_config()
+Config load_config(size_t config_buffer_length)
 {
-    auto cfg_string = getConfiguration()->toString();
+    auto conf = getBufferBytes(WasmBufferType::PluginConfiguration, 0, config_buffer_length);
+    auto cfg_string = conf->toString();
     Config cfg = Config { 0, 0 };
 
     // parse from json

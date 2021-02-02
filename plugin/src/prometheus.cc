@@ -113,7 +113,7 @@ void prometheus_query(RootContext* ctx, std::string_view clusterName, std::strin
             return;
         }
         getContext(context_id)->setEffectiveContext();
-        auto body = getBufferBytes(BufferType::HttpCallResponseBody, 0, body_size);
+        auto body = getBufferBytes(WasmBufferType::HttpCallResponseBody, 0, body_size);
         LOG_WARN(body.get()->toString());
         auto values = parseResponseBody(body.get()->toString());
         if (values.size() > 0)
